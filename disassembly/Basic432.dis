@@ -1,0 +1,476 @@
+cpu 65c02
+load $8000 Basic432.orig
+save Basic432.asm
+entry $8000
+byte $8006 3
+stringz pc
+stringz pc
+stringz pc
+word pc 4
+byte $80dd 5
+byte $80e2 5
+
+; Error messages
+
+string $80c4  7 ; "No TUBE"
+string $81ec 16 ; "Division by zero"
+string $8b8b 12 ; "Out of range"
+string $8bb8  4 ; "Byte"
+string $8bfb  5 ; "Index"
+string $8fbd  2 ; "<Missing >,"
+string $914e  1 ; "<STOP>"
+string $9151  4 ; "No <FN>"
+string $9157 13 ; "Type mismatch"
+string $9166  7 ; "No room"
+string $9478  7 ; "<RENUMBER> space"
+string $9481  5 ; "Silly"
+byte   $9359  2 ; "<Missing >""
+string $95f3  5 ; "Bad <DIM>"
+string $96cc  7 ; "<DIM> space"
+string $9803  5 ; "Not <LOCAL>"
+string $980a  5 ; "Bad <MODE>"
+string $99bc  7 ; "$ range"
+string $9ac3  5 ; "Array"
+string $9bb0  9 ; "Subscript"
+string $9c26  7 ; "Mistake"
+string $9c2f 12 ; "Syntax error"
+string $9c3d  4 ; "No <PROC>"
+string $9c43  6 ; "Escape"
+string $9ecd 15 ; "String too long"
+string $a6f4  7 ; "Too big"
+string $a7b7  9 ; "Log range"
+string $a7c2  8 ; "-ve root"
+string $a9fe  9 ; "Exp range"
+string $aa09 13 ; "Accuracy lost"
+string $add0 16 ; "No such variable"
+string $ade2  2 ; "<Missing >)"
+string $ade6  7 ; "Bad Hex"
+string $afc9 11 ; "No such <FN>/<PROC>"
+string $b04c  8 ; "Bad call"
+string $b174  9 ; "Arguments"
+string $b556 13 ; "Can't match <FOR>"
+string $b565  4 ; "No <FOR>"
+string $b62b 10 ; "<FOR> variable"
+string $b637 11 ; "Too many <FOR>s"
+string $b644  4 ; "No <TO>"
+string $b725 11 ; "Too many <GOSUB>s"
+string $b732  4 ; "No <GOSUB>"
+string $b813  7 ; "<ON> range"
+string $b81c  8 ; "<ON> syntax"
+string $b826 12 ; "No such line"
+string $ba23  8 ; "Out of <DATA>"
+string $ba2d  4 ; "No <REPEAT>"
+string $ba33  2 ; "<Missing >#"
+string $ba37 11 ; "Too many <REPEATS>s"
+string $bb93  7 ; "<LINE> space"
+
+; Embedded strings following BF0F
+string $9522 10 ; "Failed at "
+entry pc
+string $be54 13 ; "<0d>Bad program<0d>"
+entry pc
+
+; Default error handler
+byte $b2e9 6
+string pc 9
+byte pc 10
+
+; Edit command
+
+stringterm $b3be 13
+
+string $8513 3 ; "AND"
+byte pc 2
+string $8518 3 ; "ABS"
+byte pc 2
+string $851d 3 ; "ACS"
+byte pc 2
+string $8522 5 ; "ADVAL"
+byte pc 2
+string $8529 3 ; "ASC"
+byte pc 2
+string $852e 3 ; "ASN"
+byte pc 2
+string $8533 3 ; "ATN"
+byte pc 2
+string $8538 4 ; "AUTO"
+byte pc 2
+string $853e 4 ; "BGET"
+byte pc 2
+string $8544 4 ; "BPUT"
+byte pc 2
+string $854a 6 ; "COLOUR"
+byte pc 2
+string $8552 4 ; "CALL"
+byte pc 2
+string $8558 5 ; "CHAIN"
+byte pc 2
+string $855f 4 ; "CHR$"
+byte pc 2
+string $8565 5 ; "CLEAR"
+byte pc 2
+string $856c 5 ; "CLOSE"
+byte pc 2
+string $8573 3 ; "CLG"
+byte pc 2
+string $8578 3 ; "CLS"
+byte pc 2
+string $857d 3 ; "COS"
+byte pc 2
+string $8582 5 ; "COUNT"
+byte pc 2
+string $8589 5 ; "COLOR"
+byte pc 2
+string $8590 4 ; "DATA"
+byte pc 2
+string $8596 3 ; "DEG"
+byte pc 2
+string $859b 3 ; "DEF"
+byte pc 2
+string $85a0 6 ; "DELETE"
+byte pc 2
+string $85a8 3 ; "DIV"
+byte pc 2
+string $85ad 3 ; "DIM"
+byte pc 2
+string $85b2 4 ; "DRAW"
+byte pc 2
+string $85b8 7 ; "ENDPROC"
+byte pc 2
+string $85c1 3 ; "END"
+byte pc 2
+string $85c6 8 ; "ENVELOPE"
+byte pc 2
+string $85d0 4 ; "ELSE"
+byte pc 2
+string $85d6 4 ; "EVAL"
+byte pc 2
+string $85dc 3 ; "ERL"
+byte pc 2
+string $85e1 5 ; "ERROR"
+byte pc 2
+string $85e8 3 ; "EOF"
+byte pc 2
+string $85ed 3 ; "EOR"
+byte pc 2
+string $85f2 3 ; "ERR"
+byte pc 2
+string $85f7 3 ; "EXP"
+byte pc 2
+string $85fc 3 ; "EXT"
+byte pc 2
+string $8601 4 ; "EDIT"
+byte pc 2
+string $8607 3 ; "FOR"
+byte pc 2
+string $860c 5 ; "FALSE"
+byte pc 2
+string $8613 2 ; "FN"
+byte pc 2
+string $8617 4 ; "GOTO"
+byte pc 2
+string $861d 4 ; "GET$"
+byte pc 2
+string $8623 3 ; "GET"
+byte pc 2
+string $8628 5 ; "GOSUB"
+byte pc 2
+string $862f 4 ; "GCOL"
+byte pc 2
+string $8635 5 ; "HIMEM"
+byte pc 2
+string $863c 5 ; "INPUT"
+byte pc 2
+string $8643 2 ; "IF"
+byte pc 2
+string $8647 6 ; "INKEY$"
+byte pc 2
+string $864f 5 ; "INKEY"
+byte pc 2
+string $8656 3 ; "INT"
+byte pc 2
+string $865b 6 ; "INSTR("
+byte pc 2
+string $8663 4 ; "LIST"
+byte pc 2
+string $8669 4 ; "LINE"
+byte pc 2
+string $866f 4 ; "LOAD"
+byte pc 2
+string $8675 5 ; "LOMEM"
+byte pc 2
+string $867c 5 ; "LOCAL"
+byte pc 2
+string $8683 6 ; "LEFT$("
+byte pc 2
+string $868b 3 ; "LEN"
+byte pc 2
+string $8690 3 ; "LET"
+byte pc 2
+string $8695 3 ; "LOG"
+byte pc 2
+string $869a 2 ; "LN"
+byte pc 2
+string $869e 5 ; "MID$("
+byte pc 2
+string $86a5 4 ; "MODE"
+byte pc 2
+string $86ab 3 ; "MOD"
+byte pc 2
+string $86b0 4 ; "MOVE"
+byte pc 2
+string $86b6 4 ; "NEXT"
+byte pc 2
+string $86bc 3 ; "NEW"
+byte pc 2
+string $86c1 3 ; "NOT"
+byte pc 2
+string $86c6 3 ; "OLD"
+byte pc 2
+string $86cb 2 ; "ON"
+byte pc 2
+string $86cf 3 ; "OFF"
+byte pc 2
+string $86d4 2 ; "OR"
+byte pc 2
+string $86d8 6 ; "OPENIN"
+byte pc 2
+string $86e0 7 ; "OPENOUT"
+byte pc 2
+string $86e9 6 ; "OPENUP"
+byte pc 2
+string $86f1 5 ; "OSCLI"
+byte pc 2
+string $86f8 5 ; "PRINT"
+byte pc 2
+string $86ff 4 ; "PAGE"
+byte pc 2
+string $8705 3 ; "PTR"
+byte pc 2
+string $870a 2 ; "PI"
+byte pc 2
+string $870e 4 ; "PLOT"
+byte pc 2
+string $8714 6 ; "POINT("
+byte pc 2
+string $871c 4 ; "PROC"
+byte pc 2
+string $8722 3 ; "POS"
+byte pc 2
+string $8727 6 ; "RETURN"
+byte pc 2
+string $872f 6 ; "REPEAT"
+byte pc 2
+string $8737 6 ; "REPORT"
+byte pc 2
+string $873f 4 ; "READ"
+byte pc 2
+string $8745 3 ; "REM"
+byte pc 2
+string $874a 3 ; "RUN"
+byte pc 2
+string $874f 3 ; "RAD"
+byte pc 2
+string $8754 7 ; "RESTORE"
+byte pc 2
+string $875d 7 ; "RIGHT$("
+byte pc 2
+string $8766 3 ; "RND"
+byte pc 2
+string $876b 8 ; "RENUMBER"
+byte pc 2
+string $8775 4 ; "STEP"
+byte pc 2
+string $877b 4 ; "SAVE"
+byte pc 2
+string $8781 3 ; "SGN"
+byte pc 2
+string $8786 3 ; "SIN"
+byte pc 2
+string $878b 3 ; "SQR"
+byte pc 2
+string $8790 3 ; "SPC"
+byte pc 2
+string $8795 4 ; "STR$"
+byte pc 2
+string $879b 8 ; "STRING$("
+byte pc 2
+string $87a5 5 ; "SOUND"
+byte pc 2
+string $87ac 4 ; "STOP"
+byte pc 2
+string $87b2 3 ; "TAN"
+byte pc 2
+string $87b7 4 ; "THEN"
+byte pc 2
+string $87bd 2 ; "TO"
+byte pc 2
+string $87c1 4 ; "TAB("
+byte pc 2
+string $87c7 5 ; "TRACE"
+byte pc 2
+string $87ce 4 ; "TIME"
+byte pc 2
+string $87d4 4 ; "TRUE"
+byte pc 2
+string $87da 5 ; "UNTIL"
+byte pc 2
+string $87e1 3 ; "USR"
+byte pc 2
+string $87e6 3 ; "VDU"
+byte pc 2
+string $87eb 3 ; "VAL"
+byte pc 2
+string $87f0 4 ; "VPOS"
+byte pc 2
+string $87f6 5 ; "WIDTH"
+byte pc 2
+string $87fd 4 ; "PAGE"
+byte pc 2
+string $8803 3 ; "PTR"
+byte pc 2
+string $8808 4 ; "TIME"
+byte pc 2
+string $880e 5 ; "LOMEM"
+byte pc 2
+string $8815 5 ; "HIMEM"
+byte pc 2
+string $881c 8 ; "Missing "
+byte pc 2
+word pc 114
+byte pc 69
+byte pc 69
+byte pc 67
+
+# Entries from token table
+entry $ab37
+entry $ab21
+entry $ae50
+entry $ae8c
+entry $ae71
+entry $ae77
+entry $ad00
+entry $a6fc
+entry $ae34
+entry $ac03
+entry $a901
+entry $a919
+entry $ab2f
+entry $a954
+entry $ae6d
+entry $a9ca
+entry $ae7d
+entry $ae83
+entry $ab5c
+entry $aa17
+entry $ab1d
+entry $ac38
+entry $b055
+entry $ae87
+entry $ac12
+entry $ac7f
+entry $abe1
+entry $ae59
+entry $a7ac
+entry $a9bc
+entry $aaeb
+entry $ab3f
+entry $ab3b
+entry $ab54
+entry $ac5d
+entry $aafb
+entry $a9b5
+entry $aacb
+entry $ac46
+entry $a94f
+entry $a808
+entry $a96b
+entry $ae41
+entry $ac2b
+entry $ab01
+entry $aba0
+entry $ab14
+entry $b269
+entry $aeb1
+entry $aefb
+entry $aebb
+entry $af0a
+entry $aebc
+entry $af61
+entry $af8b
+entry $ac1f
+entry $954c
+entry $93da
+entry $8fe5
+entry $b412
+entry $9042
+entry $8fc5
+entry $9447
+entry $be95
+entry $b3c8
+entry $bed7
+entry $96f9
+entry $973e
+entry $96e5
+entry $96d4
+entry $b302
+entry $befd
+entry $9381
+entry $8fc0
+entry $9703
+entry $beee
+entry $98af
+entry $98b6
+entry $9073
+entry $9073
+entry $95f9
+entry $9875
+entry $8fea
+entry $9c5e
+entry $b326
+entry $b649
+entry $b709
+entry $b74d
+entry $9810
+entry $9ccc
+entry $b8e6
+entry $910d
+entry $97d2
+entry $982e
+entry $9871
+entry $b522
+entry $b78b
+entry $98dc
+entry $9880
+entry $9250
+entry $97a9
+entry $b9ad
+entry $9073
+entry $ba88
+entry $98c3
+entry $b97d
+entry $b737
+entry $8fd7
+entry $9149
+entry $9824
+entry $970b
+entry $ba47
+entry $b351
+entry $bec7
+
+
+byte $bf71
+
+word pc 7
+
+entry $a80b
+entry $a634
+entry $a6e4
+entry $a70a
+entry $ad10
+entry $a57e
+entry $a54d
+
+; Floating Point Constants etc
+
+byte $bf80 128
