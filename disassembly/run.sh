@@ -22,8 +22,12 @@ sed -i -e "s/\$\([89AB][0-9A-F][0-9A-F][0-9A-F]\)/L\1/g" Basic432.asm
 
 # Put a few back that are used in the header
 sed -i -e "s/L8000/\$8000/" Basic432.asm
-sed -i -e "s/L8028/\$8028/" Basic432.asm
 sed -i -e "s/LB800/\$B800/" Basic432.asm
+
+# Fix zero page labels
+sed -i -e "s/L00/L/g" Basic432.asm
+# And correct indentation
+sed -i -e "s/L\([0-9A-F][0-9A-F]\)   =/L\1     =/g" Basic432.asm
 
 # Remove unreferenced labels
 # (BeebDis is very liberal with labels)

@@ -1,12 +1,14 @@
 cpu 65c02
 load $8000 Basic432.orig
 save Basic432.asm
+symbols Basic432.sym
 entry $8000
 byte $8006 3
 stringz pc
 stringz pc
 stringz pc
-word pc 4
+word pc 2
+word pc 2
 byte $80dd 5
 byte $80e2 5
 
