@@ -1,0 +1,59 @@
+Summary of steps used to calculate LN(1000)
+===========================================
+
+LN(1000) = LN(0.976562500 * 1000)
+
+         = LN(0.976562500) + LN(1024)
+
+To calculate LN(a) where 0.707 < a < 1.414 a polynomial approximation is used
+
+            a = 0.976562500, LN(a) = -2.37165266E-02
+            
+        let b = (1-a)/(1+a)
+
+            b = 1.18577075E-02
+
+          b^2 = 1.40605227E-04
+
+        let c = 3 / (b^2)
+
+              = +2.13363333E+04
+
+    next, look up a correction factor in a table based on the size of b^2 compared to
+    two thresholds. Based on this one of the following factors is picked:
+        -1.500000000
+        -1.533333333
+        -1.800000000 <<<<< this one used for LN(1000)
+
+        let d = c + <correction factor>
+
+              = +2.13345333E+04
+
+        let e = b / d
+
+              = +5.55798776E-07
+
+        let f = b + e
+
+              = +1.18582633E-02
+
+        let g = f * 2
+
+              = +2.37165266E-02
+
+        let h = -g
+
+              = -2.37165266E-02     - this is LN(0.976562500)
+
+        
+LN(1000) = LN(0.976562500) + LN(1024)
+
+         = h + Log2(1024) * Log(2)
+
+         = h + 10 * 0.6931471806
+
+         = h + 6.931471806
+
+         = -2.37165266E-02 + 6.931471806
+
+         = 6.90775528
