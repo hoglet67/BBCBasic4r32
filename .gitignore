@@ -1,4 +1,4 @@
 *~
 #*
+*.bin
 not_in_git/
-disassembly/Basic432.bin
