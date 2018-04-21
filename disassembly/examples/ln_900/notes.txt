@@ -1,0 +1,265 @@
+A walk-through of LN() calculating LN(900)
+==========================================
+
+.LA7AC
+     A7AC   20 9F 97   JSR &979F    // Evalate expression
+                                    // FWA = +9.00000000E+02
+.LA7AF
+     A7AF   A5 31      LDA &31      // Test if negative
+     A7B1   45 2E      EOR &2E
+     A7B3   30 18      BMI &A7CD
+     A7B5   00         BRK          // Log Range
+     A7B6   16
+     A7B7   4C 6F 67 ...
+
+
+.LA7CD
+     A7CD   A0 80      LDY #&80     // initialize new exponent to &80
+     A7CF   A6 30      LDX &30      // load real exponent
+     A7D1   F0 08      BEQ &A7DB    // branch if very very tiny, e.g. 2E-39
+     A7D3   A5 31      LDA &31      // mantissa (in range 0.500 to 1.000)
+     A7D5   C9 B5      CMP #&B5     // 10110101 = 0.707 = 1/sqrt(2)
+     A7D7   B0 02      BCS &A7DB    // branch if greater (i.e. in range 0.707 to 1.000)
+.LA7DB
+     A7DB   DA         PHX          // push possibly updated real exponent
+     A7DC   84 30      STY &30      // store new exponent, either &80 or &81
+
+                                    // At this point FWA holds a value that is between 0.707 and 1.414)
+                                    // For LN(900) FWA = 0.878906250 (a)
+
+
+     A7DE   20 E3 A5   JSR &A5E3    // This does quite a lot of work!
+
+                                    // By inspection:
+                                    // 0.75 => +1.42857143E-01  (3/4) => (1/7)
+                                    // 0.80 => +1.11111111E-01  (4/5) => (1/9)
+                                    // 0.85 => +8.10810810E-02  (ah, got it!)
+                                    // 0.90 => +5.26315790E-02
+                                    // 0.95 => +2.56410257E-02
+                                    // 1.00 => +0.00000000E+00
+                                    // 1.05 => -2.43902438E-02
+                                    // 1.10 => -4.76190476E-02
+                                    // 1.15 => -6.97674418E-02
+                                    // 1.20 => -9.09090910E-02
+                                    // 1.25 => -1.11111111E-01
+                                    // 1.30 => -1.30434783E-01
+                                    // 1.35 => -1.48936170E-01
+                                    // 1.40 => -1.66666667E-01
+
+                                    // this function is (1-X) / (1+X)
+
+     A7E1   A5 30      LDA &30      // load the exponent
+     A7E3   F0 0A      BEQ &A7EF    // branch if very very tiny: < ~2E-39
+
+     A7E5   C9 6E      CMP #&6E     // branch if quite small: < 8E-7
+     A7E7   90 04      BCC &A7ED
+
+                                    // For LN(900) FWA = +6.44490645E-02 (b)
+     A7E9   18         CLC
+     A7EA   20 B9 A8   JSR &A8B9    // This routine does quite a lot of work and was where the bug was
+
+                                    // It uses a constant table at BFE7:
+                                    // BFE7: -1.500000000
+                                    // BFEC: -0.5777.....
+                                    // BFF1: -1.5333..... (-23/15)
+                                    // BFF6: -0.617142857 (-108/175)
+                                    // BFFB: -1.800000000
+
+.LA8B9
+     A8B9   A2 E7      LDX #&E7     // This points to a FP constant table in &BFxx
+.LA8BB
+     A8BB   08         PHP
+     A8BC   20 CB A6   JSR &A6CB    // See next box
+
+=======================================================================
+.LA6CB
+     A6CB   20 45 A5   JSR &A545    // FWA to &46C (tmp workspace)
+.LA6CE
+     A6CE   20 ED A3   JSR &A3ED    // FWB = FWA
+     A6D1   A5 30      LDA &30      // FWA exponent
+     A6D3   F0 56      BEQ &A72B
+     A6D5   64 34      STZ &34      // FWA man4
+     A6D7   06 40      ASL &40      // FWB man4
+     A6D9   90 12      BCC &A6ED    // in case of LN(900) branch is taken
+     A6DB   E6 33      INC &33      // FWA man3
+     A6DD   D0 0E      BNE &A6ED
+     A6DF   20 0B A5   JSR &A50B    // 16-bit increment of 32/31 (man2/man1)
+     A6E2   80 09      BRA &A6ED
+
+.LA6ED
+     A6ED   20 3E A7   JSR &A73E    // FWA = FWA * FWB
+     A6F0   80 20      BRA &A712    // handle rounding
+
+=======================================================================
+
+                                    // For LN(900) FWA = +4.15368191E-03 (00-79:881B9BFB:14:00)
+
+     A8BF   28         PLP
+     A8C0   66 2E      ROR &2E
+     A8C2   8A         TXA
+     A8C3   20 55 AA   JSR &AA55    // Entered with A=X=&E7, compares BF00,X an BFEF,X with FWA man1 and man2
+
+                                    // specifically:
+                                    //     man1:exp
+                                    // EQUB &F3:EQUB &9E  // this table is immediately before the
+                                    // EQUB &7B:EQUB &77  // table at BFE7
+                                    // exits with A=Y= 1 if exp:man1 < 777B
+                                    // exits with A=Y=-1 if exp:man1 > 9ef3
+                                    // otherwise  A=Y= 0
+
+                                    // For LN(900) A=Y=0 as the Exponent is &79
+
+     A8C6   3A         DEC A
+     A8C7   3A         DEC A
+     A8C8   85 47      STA &47      // For LN(900) A = FE at this point
+     A8CA   8A         TXA          // Reload A = &E7
+     A8CB   C8         INY          // For LN(900) Y = 1 now (Y can only be 0, 1 or 2)
+
+     A8CC   18         CLC          // **** the next 5 instructions are patched to fix the bug ***
+     A8CD   69 F0      ADC #&F0
+.LA8CF
+     A8CF   69 0A      ADC #&0A     // loop executed Y + 1 times
+     A8D1   88         DEY
+     A8D2   10 FB      BPL &A8CF
+     A8D4   85 4C      STA &4C      // For LN(900) A = &EC
+
+     A8D6   A9 BE      LDA #&BE     // Points to constant BFBE holds constant 3
+
+     A8D8   20 31 A6   JSR &A631    // Load an address to -> 4A,4B
+                                    // Unpack FP value at (4A) to FWB (+3.00000000E+00)
+                                    // Then calculate FWA = FWB / FWA
+
+                                    // For LN(900) FWA = +7.22250780E+02 (c)
+
+     A8DB   20 41 A5   JSR &A541    // save FWA to &476
+     A8DE   80 0E      BRA &A8EE
+
+.LA8EE
+     A8EE   20 AD A5   JSR &A5AD    // Inc 4C by 5, and copy to 4A,4B
+                                    // For LN(900) this now points to BFF1
+
+     A8F1   20 0A A7   JSR &A70A    // Unpack FP value at (4A) to FWB
+                                    // For LN(900) FWB = -1.5333
+                                    // FWA = FWA + FWB
+
+                                    // For LN(900) FWA = +7.20717447E+02 (d)
+
+     A8F4   E6 47      INC &47      // For LN(900) &47 was &FE
+     A8F6   30 E8      BMI &A8E0
+
+.LA8E0
+     A8E0   20 AD A5   JSR &A5AD    // Inc 4C by 5, and copy to 4A,4B
+                                    // For LN(900) this now points to BFF6
+
+     A8E3   20 34 A6   JSR &A634    // Unpack FP value at (4A) to FWB (-0.617142857)
+                                    // Then calculate FWA = FWB / FWA
+                                    // For LN(900) FWA = -8.56289604E-04 (e)
+
+     A8E6   A9 76      LDA #&76
+     A8E8   20 BD A5   JSR &A5BD    // 4A,4B = &0476 which was (c)
+
+     A8EB   20 0A A7   JSR &A70A    // Unpack FP value at (4A) to FWB
+                                    // For LN(900) FWB = +7.22250780E+02
+                                    // FWA = FWA + FWB = +7.22249924E+02 (f)
+
+.LA8EE
+     A8EE   20 AD A5   JSR &A5AD    // Inc 4C by 5, and copy to 4A,4B
+                                    // For LN(900) this now points to BFFB
+
+     A8F1   20 0A A7   JSR &A70A    // Unpack FP value at (4A) to FWB
+                                    // For LN(900) FWB = -1.80000000E+00
+                                    // FWA = FWA + FWB
+
+                                    // For LN(900) FWA = +7.20449924E+02 (g)
+
+     A8F4   E6 47      INC &47      // For LN(900) &47 was &FF
+     A8F6   30 E8      BMI &A8E0
+
+
+     A8F8   20 BB A5   JSR &A5BB    // 4A,4B = &046C
+
+     A8FB   20 34 A6   JSR &A634    // Unpack FP value at (4A) to FWB (+6.44490645E-02)
+                                    // (this is the value of FWA when A8B9 was called)
+                                    // Then calculate FWA = FWB / FWA
+
+                                    // For LN(900) FWA = +8.94566886E-05 (h)
+     A8FE   4C 0A A7   JMP &A70A
+
+.LA70A
+     A70A   20 14 A5   JSR &A514    // Unpack FP value at (4A) to FWB +6.44490645E-02)
+                                    // (this is the value of FWA when A8B9 was called)
+
+.LA70D
+     A70D   F0 2C      BEQ &A73B
+.LA70F
+     A70F   20 29 84   JSR &8429    // FWA = FWA + FWB
+                                    // For LN(900) FWA = +6.45385211E-02 (i)
+.LA712
+                                    // round
+
+.LA7ED
+     A7ED   E6 30      INC &30      // increment FWA exponent, i.e. *2
+
+                                    // For LN(900) FWA = +1.29077042E-01 (j)
+.LA7EF
+     A7EF   20 45 A5   JSR &A545    // store intermediate result in FWA to &46C (tmp workspace)
+     A7F2   68         PLA          // pull modified exponent
+     A7F3   49 80      EOR #&80
+     A7F5   F0 0E      BEQ &A805    // branch if exponent was &80 (i.e. 2^0)
+
+                                    // For LN(900) A=0A
+
+     A7F7   20 E6 82   JSR &82E6    // Convert one byte value in A (modified exponent) to floating point in FWA
+
+                                    // For LN(900) FWA = 10
+
+     A7FA   A9 9F      LDA #&9F     // Load the address &BF9F-> 4A,4B
+     A7FC   20 B4 A5   JSR &A5B4    // this holds value 0.693147181 which is LN(2)
+
+     A7FF   20 A3 A9   JSR &A9A3    // see next bit
+
+.LA9A3
+     A9A3   20 14 A5   JSR &A514    // Load FWB with 4A,4B
+     A9A6   A0 05      LDY #&05
+     A9A8   B1 4A      LDA (&4A),Y
+     A9AA   85 41      STA &41
+     A9AC   20 3E A7   JSR &A73E    // FWA = FWA * FWB
+
+                                    // FWA now holds modified exponent * LN(2)
+
+                                    // For LN(900) FWA = 6.93147181
+
+     A9AF   20 BB A5   JSR &A5BB    // 4A,4B = &046C (intermediate result in tmp workspace)
+     A9B2   4C 04 A7   JMP &A704
+
+.LA704
+     A704   A5 31      LDA &31      // Change the sign of FWA
+     A706   45 2E      EOR &2E
+     A708   85 2E      STA &2E
+
+                                    // For LN(900) FWA = -6.93147181
+.LA70A
+     A70A   20 14 A5   JSR &A514    // Load FWB with 4A,4B
+                                    // For LN(900) FWB =  +1.29077042E-01
+.LA70D
+     A70D   F0 2C      BEQ &A73B
+.LA70F
+                                    // FWA holds modified exponent * LN(2)
+                                    // FWB holds intermediate result
+     A70F   20 29 84   JSR &8429    // FWA = FWA + FWB
+
+                                    // For LN(900) FWA = -6.80239476E+00
+
+     A802   20 12 A7   JSR &A712    // Seems to handle rounding byte (&35)
+
+                                    // For LN(900) FWA = -6.80239476E+00
+.LA805
+                                    // FWA now holds the result, with an incorrect sign
+     A805   4C 10 AD   JMP &AD10
+.LAD10
+     AD10   A5 31      LDA &31      // Change the sign of FWA
+     AD12   45 2E      EOR &2E
+.LAD14
+     AD14   85 2E      STA &2E
+     AD16   A9 FF      LDA #&FF
+     AD18   60         RTS          // For LN(900) FWA = -6.80239476E+00, which is LN(900)

@@ -1,0 +1,73 @@
+Summary of steps used to calculate LN(900)
+===========================================
+
+LN(900) = LN(0.878906250 * 1024)
+
+         = LN(0.878906250) + LN(1024)
+
+To calculate LN(a) where 0.707 < a < 1.414 a polynomial approximation is used
+
+            a = 0.878906250, LN(a) = -1.290770423-01
+
+        let b = (1-a)/(1+a)
+
+            b = 6.44490645E-02
+
+          b^2 = 4.15368191E-03
+
+        let c = 3 / (b^2)
+
+              = 7.22250780E+02
+
+    next, look up a correction factor in a table based on the size of b^2 compared to
+    two thresholds. Based on this one of the following factors is picked:
+     C1:   -1.500000000
+     C2:   -0.577777777
+     C3:   -1.533333333 <<<<< the stating point for LN(900)
+     C4:   -0.617142857
+     C5:   -1.800000000
+
+        let d = c + <C3>            ( ** extra step )
+
+              = +7.20717447E+02
+
+        let e = <C4> / d            ( ** extra step )
+
+              = -8.56289604E-04
+
+        let f = c + e               ( ** extra step ))
+
+              = +7.22249924E+02
+
+        let g = f + <C5>
+
+              = +7.20449924E+02
+
+        let h = b / g
+
+              = 8.94566886E-05
+
+        let i = b + h
+
+              = +6.45385211E-02
+
+        let j = i * 2
+
+              = +1.29077042E-01
+
+        let k = -j
+
+              = -1.29077042E-01     - this is LN(0.878906250)
+
+
+LN(900) = LN(0.878906250) + LN(1024)
+
+        = h + Log2(1024) * Log(2)
+
+        = h + 10 * 0.6931471806
+
+        = h + 6.931471806
+
+        = -1.29077042E-01 + 6.931471806
+
+        = 6.80239476
