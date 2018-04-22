@@ -52,6 +52,38 @@ DOUBLE taylor_odd_series_log(DOUBLE x, int nterms) {
    return result;
 }
 
+
+DOUBLE bbcbasic4r00_log(DOUBLE x, int nterms) {
+
+   const DOUBLE C1 =  0.546254168   ;
+   const DOUBLE C2 = -0.0513882861  ;
+   const DOUBLE C3 =  0.583293331   ;
+   const DOUBLE C4 = -0.0374986753  ;
+   const DOUBLE C5 =  0.750000063   ;
+   const DOUBLE C6 =  0.33333334    ;
+   const DOUBLE C7 = -0.5           ;
+
+   DOUBLE z = x - 1.0;
+   DOUBLE rec_z = 1.0 / z;
+
+   DOUBLE fwa = rec_z;
+   fwa = C1    + fwa;
+   fwa = C2    / fwa;
+   fwa = C3    + fwa;
+   fwa = rec_z + fwa;
+   fwa = C4    / fwa;
+   fwa = C5    + fwa;
+   fwa = rec_z + fwa;
+   fwa = C6    / fwa;
+   fwa = C7    + fwa;
+   fwa = z     * fwa;
+   fwa = z     * fwa;
+   fwa = z     + fwa;
+
+   return fwa;
+}
+
+
 //
 // Follows the implementation in BBC Basic 4r32
 //
@@ -109,5 +141,9 @@ int main() {
 
    printf("BBC Basic 4r32 with 1/3 coeffs: max_err = %Le\n",
           evaluate_error(bbcbasic4r32_log, 0));
+   printf("\n");
+
+   printf("BBC Basic 4r00                : max_err = %Le\n",
+          evaluate_error(bbcbasic4r00_log, 0));
    printf("\n");
 }
