@@ -94,7 +94,7 @@ DOUBLE bbcbasic4r32_log(DOUBLE x, int nterms) {
    DOUBLE b, c, d, e, f, g, h, i, j, k;
    b = (1.0 - x) / (1.0 + x);
    c = 3.0 / (b * b);
-   int use_extra = (nterms > 1) || (nterms == 0 && c > 1.21307373E-3);
+   int use_extra = (nterms > 1) || (nterms == 0 && (b*b) > 1.21307373E-3);
    if (use_extra) {
       d = C3 + c;
       e = C4 / d;
