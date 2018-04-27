@@ -52,6 +52,39 @@ DOUBLE taylor_odd_series_log(DOUBLE x, int nterms) {
    return result;
 }
 
+DOUBLE bbcbasic2_log(DOUBLE x, int nterms) {
+
+   const DOUBLE C1 = 0.00892463796;
+   const DOUBLE C2 = 249.057128131;
+   const DOUBLE C3 = 0.04166817555;
+   const DOUBLE C4 = 45.0015963614;
+   const DOUBLE C5 = 0.44444441562;
+   const DOUBLE C6 = 2.99999994133;
+   const DOUBLE C7 = -0.5;
+
+   DOUBLE z = x - 1;
+
+   DOUBLE fwa;
+   fwa = C1;
+   fwa = z / fwa;
+   fwa = C2 + fwa;
+   fwa = z / fwa;
+   fwa = C3 + fwa;
+   fwa = z / fwa;
+   fwa = C4 + fwa;
+   fwa = z / fwa;
+   fwa = C5 + fwa;
+   fwa = z / fwa;
+   fwa = C6 + fwa;
+   fwa = z / fwa;
+   fwa = C7 + fwa;
+
+   fwa = z * fwa;
+   fwa = z * fwa;
+   fwa = z + fwa;
+
+   return fwa;
+}
 
 DOUBLE bbcbasic4r00_log(DOUBLE x, int nterms) {
 
@@ -128,22 +161,26 @@ int main() {
              nterms, evaluate_error(taylor_series_log, nterms));
    }
    printf("\n");
+
    for (int nterms = 1; nterms < 20; nterms ++) {
       printf("Taylor series B with %3d terms: max_err = %Le\n",
              nterms, evaluate_error(taylor_odd_series_log, nterms));
    }
    printf("\n");
-   printf("BBC Basic 4r32 with 1   coeffs: max_err = %Le\n",
-          evaluate_error(bbcbasic4r32_log, 1));
 
-   printf("BBC Basic 4r32 with 3   coeffs: max_err = %Le\n",
-          evaluate_error(bbcbasic4r32_log, 3));
-
-   printf("BBC Basic 4r32 with 1/3 coeffs: max_err = %Le\n",
-          evaluate_error(bbcbasic4r32_log, 0));
+   printf("BBC Basic 2                   : max_err = %Le\n",
+          evaluate_error(bbcbasic2_log, 0));
    printf("\n");
 
    printf("BBC Basic 4r00                : max_err = %Le\n",
           evaluate_error(bbcbasic4r00_log, 0));
+   printf("\n");
+
+   printf("BBC Basic 4r32 with 1   coeffs: max_err = %Le\n",
+          evaluate_error(bbcbasic4r32_log, 1));
+   printf("BBC Basic 4r32 with 3   coeffs: max_err = %Le\n",
+          evaluate_error(bbcbasic4r32_log, 3));
+   printf("BBC Basic 4r32 with 1/3 coeffs: max_err = %Le\n",
+          evaluate_error(bbcbasic4r32_log, 0));
    printf("\n");
 }
