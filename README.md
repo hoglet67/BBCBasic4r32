@@ -13,6 +13,9 @@ P.ASN(0.03125) | 3.126527E-2   | 3.12550885E-2
 P.ACS(0.03125) | 1.53953106    | 1.53954124
 P.ATN(0.9375)  | 0.753140099   | 0.753151281
 
+[Here's a c program](https://github.com/hoglet67/BBCBasic4r32/blob/master/c/log_test.c)
+implementing the same algorithms as the Basic.
+
 We were able to understand the bug and fix it. You can patch BBC Basic located at &8000
 with a program like this:
 ```
