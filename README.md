@@ -4,7 +4,14 @@ suitable for assembly with beebasm.
 
 Also here are some explorations of the algorithms used to calculate the log and trig functions,
 with an aim to understanding the bugs mentioned in
-[this thread](https://stardot.org.uk/forums/viewtopic.php?t=10111) on StarDot.
+[this thread](https://stardot.org.uk/forums/viewtopic.php?t=10111) on StarDot:
+
+Function       | Basic 4r32    | Correct value
+-------------- | ------------- | -------------
+P.LN(1.03125)  | 3.07692308E-2 | 3.07716587E-2
+P.ASN(0.03125) | 3.126527E-2   | 3.12550885E-2
+P.ACS(0.03125) | 1.53953106    | 1.53954124
+P.ATN(0.9375)  | 0.753140099   | 0.753151281
 
 We were able to understand the bug and fix it. You can patch BBC Basic located at &8000
 with a program like this:
