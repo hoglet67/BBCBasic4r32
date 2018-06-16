@@ -66,4 +66,4 @@ Our fixed version:
 This fixed code would now fail for entries near the beginning of a page, but that
 doesn't happen.
 
-We found it interesting that the same bug affected both LN and ATN, the reason being that both use the same coefficients (but with different signs) and therefore the same tables.
+We found it interesting that the same bug affected both LN and ATN, the reason being that both use the same coefficients (but with different signs) and therefore the same tables. ACS and ASN are computed from ATN, so they inherit the bug, and the fix.
