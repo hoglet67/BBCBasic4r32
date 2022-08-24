@@ -28,7 +28,7 @@ with a program like this:
    70  CLC
    80  ADC #&F0
    90  .loop
-  100  ADC #$0A
+  100  ADC #&0A
   110  DEY
   120  BPL loop
   130 ]
